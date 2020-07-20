@@ -1,16 +1,9 @@
 # newsappflutter
 
-A new Flutter application.
+* DARK / LIGHT mode
+* Live News
+* Sort By catagory | country | NewsChannel
+* Find With Keyword
+* rest API
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ <img src="https://raw.githubusercontent.com/j-j-gajjar/NewsApp/master/ScreenShots/Screenshot_1595243199.png" alt="Girl in a jacket" height="600"> <img src="https://raw.githubusercontent.com/j-j-gajjar/NewsApp/master/ScreenShots/Screenshot_1595243207.png" alt="Girl in a jacket" height="600"> <img src="https://raw.githubusercontent.com/j-j-gajjar/NewsApp/master/ScreenShots/Screenshot_1595243210.png" alt="Girl in a jacket" height="600">
