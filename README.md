@@ -2,7 +2,7 @@
 
 * DARK / LIGHT mode
 * Live News
-* Sort By catagory | country | NewsChannel
+* Sort By category | country | News Channel
 * Find With Keyword
 * rest API
 
