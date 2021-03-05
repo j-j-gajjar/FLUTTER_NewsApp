@@ -23,10 +23,7 @@ class _Artical_NewsState extends State<Artical_News> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("News"),
-      ),
+      appBar: AppBar(centerTitle: true, title: Text("News")),
       body: Container(
         child: Stack(
           children: [
@@ -36,11 +33,8 @@ class _Artical_NewsState extends State<Artical_News> {
               onWebViewCreated: (controller) {
                 _completer.complete(controller);
               },
-              onPageFinished: (finish) {
-                setState(() {
-                  _isLoadingPage = false;
-                });
-              },
+              onPageFinished: (finish) =>
+                  setState(() => _isLoadingPage = false),
             ),
             _isLoadingPage
                 ? Container(

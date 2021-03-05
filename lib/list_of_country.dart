@@ -18,6 +18,10 @@ var listOfCountry = [
   {
     "name": "New Zealand",
     "code": "nz",
+  },
+  {
+    "name": "Israel",
+    "code": "il",
   }
 ];
 
