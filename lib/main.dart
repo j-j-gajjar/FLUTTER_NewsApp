@@ -211,7 +211,8 @@ class _MyAppState extends State<MyApp> {
             : news == "notFound"
                 ? Center(
                     child: Image.network(
-                        "https://www.estrategiaswebcolombia.com/wp-content/themes/seocify/assets/images/404.png"),
+                      "https://www.estrategiaswebcolombia.com/wp-content/themes/seocify/assets/images/404.png",
+                    ),
                   )
                 : ListView.builder(
                     itemBuilder: (context, index) {
@@ -227,7 +228,7 @@ class _MyAppState extends State<MyApp> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      ArticalNews(newsUrl: news[index]['url']),
+                                      Artical_News(NewsUrl: news[index]['url']),
                                 ),
                               );
                             },
