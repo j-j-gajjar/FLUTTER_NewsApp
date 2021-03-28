@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:async';
 
-class Artical_News extends StatefulWidget {
-  final NewsUrl;
+class ArticalNews extends StatefulWidget {
+  final newsUrl;
 
-  const Artical_News({Key key, this.NewsUrl}) : super(key: key);
+  const ArticalNews({this.newsUrl});
   @override
-  _Artical_NewsState createState() => _Artical_NewsState();
+  _ArticalNewsState createState() => _ArticalNewsState();
 }
 
-class _Artical_NewsState extends State<Artical_News> {
+class _ArticalNewsState extends State<ArticalNews> {
   final Completer<WebViewController> _completer =
       Completer<WebViewController>();
-  bool _isLoadingPage;
+  late bool _isLoadingPage;
   @override
   void initState() {
     super.initState();
@@ -23,24 +23,18 @@ class _Artical_NewsState extends State<Artical_News> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("News"),
-      ),
+      appBar: AppBar(centerTitle: true, title: Text("News")),
       body: Container(
         child: Stack(
           children: [
             WebView(
-              initialUrl: widget.NewsUrl,
+              initialUrl: widget.newsUrl,
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (controller) {
                 _completer.complete(controller);
               },
-              onPageFinished: (finish) {
-                setState(() {
-                  _isLoadingPage = false;
-                });
-              },
+              onPageFinished: (finish) =>
+                  setState(() => _isLoadingPage = false),
             ),
             _isLoadingPage
                 ? Container(
