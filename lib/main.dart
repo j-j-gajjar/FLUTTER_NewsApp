@@ -7,10 +7,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:newsappflutter/list_of_country.dart';
 
-var cName;
-var country;
-var catagory;
-var findNews;
 GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
 toggleDrawer() async {
@@ -28,54 +24,101 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  var cName;
+  var country;
+  var catagory;
+  var findNews;
+  int pageNum = 1;
+  bool isPageLoading = false;
+  late ScrollController controller;
+  int pageSize = 10;
   bool isSwitched = false;
-  var news;
-  int currentLength = 0;
+  List news = [];
+  bool notFound = false;
   List<int> data = [];
-  int increment = 0;
   bool isLoading = false;
+  String baseApi = "https://newsapi.org/v2/top-headlines?";
 
   @override
   void initState() {
+    controller = new ScrollController()..addListener(_scrollListener);
     getNews();
     super.initState();
   }
 
-  getNewsChannel(channel) async {
-    var url =
-        "https://newsapi.org/v2/top-headlines?sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
-
-    http.Response res = await http.get(Uri.parse(url));
-    var json = jsonDecode(res.body)['totalResults'] == 0
-        ? "notFound"
-        : jsonDecode(res.body)['articles'];
-    setState(() => news = json);
+  _scrollListener() {
+    if (controller.position.pixels == controller.position.maxScrollExtent) {
+      setState(() {
+        isLoading = true;
+      });
+      getNews();
+    }
   }
 
-  getNews() async {
-    var url;
-    if (country == null) {
-      if (catagory == null) {
-        url =
-            "https://newsapi.org/v2/top-headlines?country=in&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+  getDataFromApi(url) async {
+    http.Response res = await http.get(Uri.parse(url));
+    if (res.statusCode == 200) {
+      if (jsonDecode(res.body)['totalResults'] == 0) {
+        notFound = isLoading ?false :true;
+        setState(() {
+
+          isLoading = false;
+        });
       } else {
-        url =
-            "https://newsapi.org/v2/top-headlines?country=in&category=$catagory&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+        if (isLoading) {
+          List newData = jsonDecode(res.body)['articles'];
+          newData.forEach((e) {
+            news.add(e);
+          });
+        } else {
+          news = jsonDecode(res.body)['articles'];
+        }
+        setState(() {
+          notFound = false;
+          isLoading = false;
+        });
       }
     } else {
-      if (catagory == null) {
-        url =
-            "https://newsapi.org/v2/top-headlines?country=$country&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
-      } else {
-        url =
-            "https://newsapi.org/v2/top-headlines?country=$country&category=$catagory&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
-      }
+      setState(() => notFound = true);
     }
-    print(url);
-    http.Response res = await http.get(Uri.parse(url));
+  }
 
-    var json = jsonDecode(res.body)['articles'];
-    setState(() => news = json);
+  getNews({channel, searchKey, reload = false}) async {
+    setState(() => notFound = false);
+
+    if (!reload && !isLoading) {
+      toggleDrawer();
+    } else {
+      country = null;
+      catagory = null;
+    }
+    if (isLoading) {
+      pageNum++;
+    } else {
+      setState(() {
+        news = [];
+      });
+      pageNum = 1;
+    }
+    baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&";
+
+    baseApi += country == null ? 'country=in&' : 'country=$country&';
+    baseApi += catagory == null ? '' : 'category=$catagory&';
+    baseApi += 'apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6';
+    if (channel != null) {
+      country = null;
+      catagory = null;
+      baseApi =
+          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+    }
+    if (searchKey != null) {
+      country = null;
+      catagory = null;
+      baseApi =
+          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&q=$searchKey&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+    }
+    print(baseApi);
+    getDataFromApi(baseApi);
   }
 
   @override
@@ -119,14 +162,7 @@ class _MyAppState extends State<MyApp> {
                     MaterialButton(
                       child: Text("Find"),
                       onPressed: () async {
-                        http.Response res = await http.get(Uri.parse(
-                            "https://newsapi.org/v2/top-headlines?q=$findNews&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6"));
-
-                        var json = jsonDecode(res.body)['totalResults'] == 0
-                            ? "notFound"
-                            : jsonDecode(res.body)['articles'];
-                        setState(() => news = json);
-                        toggleDrawer();
+                        getNews(searchKey: findNews);
                       },
                     ),
                   ],
@@ -141,7 +177,6 @@ class _MyAppState extends State<MyApp> {
                         country = listOfCountry[i]['code'];
                         cName = listOfCountry[i]['name']!.toUpperCase();
                         getNews();
-                        toggleDrawer();
                       },
                       name: listOfCountry[i]['name']!.toUpperCase(),
                     ),
@@ -152,13 +187,11 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   for (int i = 0; i < listOfCatagory.length; i++)
                     DropDownList(
-                      call: () {
-                        catagory = listOfCatagory[i]['code'];
-                        getNews();
-                        toggleDrawer();
-                      },
-                      name: listOfCatagory[i]['name']!.toUpperCase(),
-                    ),
+                        call: () {
+                          catagory = listOfCatagory[i]['code'];
+                          getNews();
+                        },
+                        name: listOfCatagory[i]['name']!.toUpperCase())
                 ],
               ),
               ExpansionTile(
@@ -167,8 +200,7 @@ class _MyAppState extends State<MyApp> {
                   for (int i = 0; i < listOfNewsChannel.length; i++)
                     DropDownList(
                       call: () {
-                        getNewsChannel(listOfNewsChannel[i]['code']);
-                        toggleDrawer();
+                        getNews(channel: listOfNewsChannel[i]['code']);
                       },
                       name: listOfNewsChannel[i]['name']!.toUpperCase(),
                     ),
@@ -191,7 +223,7 @@ class _MyAppState extends State<MyApp> {
                 catagory = null;
                 findNews = null;
                 cName = null;
-                getNews();
+                getNews(reload: true);
               },
               icon: Icon(Icons.refresh),
             ),
@@ -203,81 +235,90 @@ class _MyAppState extends State<MyApp> {
             ),
           ],
         ),
-        body: news == null
-            ? Center(child: CircularProgressIndicator())
-            : news == "notFound"
-                ? Center(
-                    child: Image.network(
-                        "https://www.estrategiaswebcolombia.com/wp-content/themes/seocify/assets/images/404.png"),
-                  )
+        body: notFound
+            ? Center(
+                child: Text(
+                  "Not Found",
+                  style: TextStyle(fontSize: 30),
+                ),
+              )
+            : news.length == 0
+                ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
+                    controller: controller,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Card(
-                          elevation: 5,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                          child: GestureDetector(
-                            onTap: () async {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ArticalNews(newsUrl: news[index]['url']),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 15),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Column(
-                                children: [
-                                  Stack(children: [
-                                    news[index]['urlToImage'] == null
-                                        ? Container()
-                                        : ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            child: CachedNetworkImage(
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                      child:
-                                                          CircularProgressIndicator()),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
-                                              imageUrl: news[index]
-                                                  ['urlToImage'],
-                                            ),
-                                          ),
-                                    Positioned(
-                                      bottom: 10,
-                                      right: 20,
-                                      child: Text(
-                                        "${news[index]['source']['name']}",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Card(
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ArticalNews(newsUrl: news[index]['url']),
                                     ),
-                                  ]),
-                                  Divider(),
-                                  Text(
-                                    "${news[index]['title']}",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-                                  )
-                                ],
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 15),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Column(
+                                    children: [
+                                      Stack(children: [
+                                        news[index]['urlToImage'] == null
+                                            ? Container()
+                                            : ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: CachedNetworkImage(
+                                                  placeholder: (context, url) =>
+                                                      Container(
+                                                          child:
+                                                              CircularProgressIndicator()),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                  imageUrl: news[index]
+                                                      ['urlToImage'],
+                                                ),
+                                              ),
+                                        Positioned(
+                                          bottom: 10,
+                                          right: 20,
+                                          child: Text(
+                                            "${news[index]['source']['name']}",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                      ]),
+                                      Divider(),
+                                      Text(
+                                        "${news[index]['title']}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          index==news.length-1 && isLoading?Center(child: CircularProgressIndicator()):SizedBox(),
+                        ],
                       );
                     },
                     itemCount: news.length,
                   ),
+
       ),
     );
   }
@@ -293,7 +334,7 @@ class DropDownList extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: ListTile(title: Text(name)),
-      onTap: () => call,
+      onTap: () => call(),
     );
   }
 }
