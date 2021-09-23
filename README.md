@@ -19,6 +19,8 @@ A Simple News App built with Flutter. In this app, there is a Home page, which w
 [With GetX Project](https://github.com/j-j-gajjar/Flutter_News_App_Using_GetX_MVC)
 
 <hr/>
+<a href="https://paypal.me/jjgajjar?locale.x=en_GB" ><img src="https://img.buymeacoffee.com/button-api/?text=BUY ME A COFFIE!&emoji=🍕&slug=jjgajjar&button_colour=13485f&font_colour=ffffff&font_family=Poppins&outline_colour=ffffff&coffee_colour=FFDD00"></a>
+<ht/>
 
 <table style="border: 1px solid black;">
             <tr>
