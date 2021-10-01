@@ -48,9 +48,7 @@ class _MyAppState extends State<MyApp> {
 
   _scrollListener() {
     if (controller.position.pixels == controller.position.maxScrollExtent) {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
       getNews();
     }
   }
@@ -59,11 +57,8 @@ class _MyAppState extends State<MyApp> {
     http.Response res = await http.get(Uri.parse(url));
     if (res.statusCode == 200) {
       if (jsonDecode(res.body)['totalResults'] == 0) {
-        notFound = isLoading ?false :true;
-        setState(() {
-
-          isLoading = false;
-        });
+        notFound = isLoading ? false : true;
+        setState(() => isLoading = false);
       } else {
         if (isLoading) {
           List newData = jsonDecode(res.body)['articles'];
@@ -95,9 +90,7 @@ class _MyAppState extends State<MyApp> {
     if (isLoading) {
       pageNum++;
     } else {
-      setState(() {
-        news = [];
-      });
+      setState(() => news = []);
       pageNum = 1;
     }
     baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&";
@@ -108,14 +101,12 @@ class _MyAppState extends State<MyApp> {
     if (channel != null) {
       country = null;
       catagory = null;
-      baseApi =
-          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+      baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
     }
     if (searchKey != null) {
       country = null;
       catagory = null;
-      baseApi =
-          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&q=$searchKey&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+      baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&q=$searchKey&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
     }
     print(baseApi);
     getDataFromApi(baseApi);
@@ -139,9 +130,7 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     country != null ? Text("Country = $cName") : Container(),
                     SizedBox(height: 10),
-                    catagory != null
-                        ? Text("Catagory = $catagory")
-                        : Container(),
+                    catagory != null ? Text("Catagory = $catagory") : Container(),
                     SizedBox(height: 20),
                   ],
                 ),
@@ -161,9 +150,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                     MaterialButton(
                       child: Text("Find"),
-                      onPressed: () async {
-                        getNews(searchKey: findNews);
-                      },
+                      onPressed: () async => getNews(searchKey: findNews),
                     ),
                   ],
                 ),
@@ -199,17 +186,12 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   for (int i = 0; i < listOfNewsChannel.length; i++)
                     DropDownList(
-                      call: () {
-                        getNews(channel: listOfNewsChannel[i]['code']);
-                      },
+                      call: () => getNews(channel: listOfNewsChannel[i]['code']),
                       name: listOfNewsChannel[i]['name']!.toUpperCase(),
                     ),
                 ],
               ),
-              ListTile(
-                title: Text("Exit"),
-                onTap: () => exit(0),
-              ),
+              ListTile(title: Text("Exit"), onTap: () => exit(0)),
             ],
           ),
         ),
@@ -236,12 +218,7 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
         body: notFound
-            ? Center(
-                child: Text(
-                  "Not Found",
-                  style: TextStyle(fontSize: 30),
-                ),
-              )
+            ? Center(child: Text("Not Found", style: TextStyle(fontSize: 30)))
             : news.length == 0
                 ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
@@ -253,58 +230,40 @@ class _MyAppState extends State<MyApp> {
                             padding: const EdgeInsets.all(5),
                             child: Card(
                               elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                               child: GestureDetector(
                                 onTap: () async {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ArticalNews(newsUrl: news[index]['url']),
-                                    ),
+                                    MaterialPageRoute(builder: (context) => ArticalNews(newsUrl: news[index]['url'])),
                                   );
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 15),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(30)),
+                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
                                   child: Column(
                                     children: [
                                       Stack(children: [
                                         news[index]['urlToImage'] == null
                                             ? Container()
                                             : ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
+                                                borderRadius: BorderRadius.circular(20),
                                                 child: CachedNetworkImage(
-                                                  placeholder: (context, url) =>
-                                                      Container(
-                                                          child:
-                                                              CircularProgressIndicator()),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Icon(Icons.error),
-                                                  imageUrl: news[index]
-                                                      ['urlToImage'],
+                                                  placeholder: (context, url) => Container(child: CircularProgressIndicator()),
+                                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                                  imageUrl: news[index]['urlToImage'],
                                                 ),
                                               ),
                                         Positioned(
                                           bottom: 10,
                                           right: 20,
-                                          child: Text(
-                                            "${news[index]['source']['name']}",
-                                            style: TextStyle(color: Colors.red),
-                                          ),
+                                          child: Text("${news[index]['source']['name']}", style: TextStyle(color: Colors.red)),
                                         ),
                                       ]),
                                       Divider(),
                                       Text(
                                         "${news[index]['title']}",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18),
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                                       )
                                     ],
                                   ),
@@ -312,13 +271,12 @@ class _MyAppState extends State<MyApp> {
                               ),
                             ),
                           ),
-                          index==news.length-1 && isLoading?Center(child: CircularProgressIndicator()):SizedBox(),
+                          index == news.length - 1 && isLoading ? Center(child: CircularProgressIndicator()) : SizedBox(),
                         ],
                       );
                     },
                     itemCount: news.length,
                   ),
-
       ),
     );
   }
@@ -332,9 +290,6 @@ class DropDownList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: ListTile(title: Text(name)),
-      onTap: () => call(),
-    );
+    return GestureDetector(child: ListTile(title: Text(name)), onTap: () => call());
   }
 }
