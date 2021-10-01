@@ -11,8 +11,7 @@ class ArticalNews extends StatefulWidget {
 }
 
 class _ArticalNewsState extends State<ArticalNews> {
-  final Completer<WebViewController> _completer =
-      Completer<WebViewController>();
+  final Completer<WebViewController> _completer = Completer<WebViewController>();
   late bool _isLoadingPage;
   @override
   void initState() {
@@ -33,15 +32,9 @@ class _ArticalNewsState extends State<ArticalNews> {
               onWebViewCreated: (controller) {
                 _completer.complete(controller);
               },
-              onPageFinished: (finish) =>
-                  setState(() => _isLoadingPage = false),
+              onPageFinished: (finish) => setState(() => _isLoadingPage = false),
             ),
-            _isLoadingPage
-                ? Container(
-                    alignment: FractionalOffset.center,
-                    child: CircularProgressIndicator(),
-                  )
-                : Container(),
+            _isLoadingPage ? Container(alignment: FractionalOffset.center, child: CircularProgressIndicator()) : Container(),
           ],
         ),
       ),
