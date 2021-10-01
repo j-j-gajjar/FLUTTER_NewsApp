@@ -10,8 +10,8 @@ A Simple News App built with Flutter. In this app, there is a Home page, which w
 - [x] Select news category page
 - [x] Live News
 - [x] Sort By Category | Country | News Channel
-- [x] Beautiful UI with Dual themes ie. Light Theme and Dark Theme
-- [x] Fetch news from api
+- [x] Beautiful UI with Dual themes, ie. Light Theme and Dark Theme
+- [x] Fetch news from API
 - [x] Parse complicated JSON.
 - [x] Find With Keyword
 - [x] Display full news detail
