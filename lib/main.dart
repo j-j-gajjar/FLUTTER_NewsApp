@@ -10,10 +10,10 @@ import 'package:newsappflutter/list_of_country.dart';
 GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
 toggleDrawer() async {
-  if (_scaffoldKey.currentState!.isDrawerOpen)
-    _scaffoldKey.currentState!.openEndDrawer();
+  if (_scaffoldKey.currentState?.isDrawerOpen ?? false)
+    _scaffoldKey.currentState?.openEndDrawer();
   else
-    _scaffoldKey.currentState!.openDrawer();
+    _scaffoldKey.currentState?.openDrawer();
 }
 
 void main() => runApp(MyApp());
