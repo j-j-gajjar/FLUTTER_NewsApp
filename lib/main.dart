@@ -1,33 +1,37 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:newsappflutter/artical_news.dart';
 import 'package:http/http.dart' as http;
+import 'package:newsappflutter/constants.dart';
 import 'dart:convert';
 import 'package:newsappflutter/list_of_country.dart';
 
-GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 toggleDrawer() async {
-  if (_scaffoldKey.currentState?.isDrawerOpen ?? false)
+  if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
     _scaffoldKey.currentState?.openEndDrawer();
-  else
+  } else {
     _scaffoldKey.currentState?.openDrawer();
+  }
 }
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  var cName;
-  var country;
-  var catagory;
-  var findNews;
+  dynamic cName;
+  dynamic country;
+  dynamic catagory;
+  dynamic findNews;
   int pageNum = 1;
   bool isPageLoading = false;
   late ScrollController controller;
@@ -41,7 +45,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    controller = new ScrollController()..addListener(_scrollListener);
+    controller = ScrollController()..addListener(_scrollListener);
     getNews();
     super.initState();
   }
@@ -62,9 +66,9 @@ class _MyAppState extends State<MyApp> {
       } else {
         if (isLoading) {
           List newData = jsonDecode(res.body)['articles'];
-          newData.forEach((e) {
+          for (var e in newData) {
             news.add(e);
-          });
+          }
         } else {
           news = jsonDecode(res.body)['articles'];
         }
@@ -97,18 +101,20 @@ class _MyAppState extends State<MyApp> {
 
     baseApi += country == null ? 'country=in&' : 'country=$country&';
     baseApi += catagory == null ? '' : 'category=$catagory&';
-    baseApi += 'apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6';
+    baseApi += 'apiKey=$apiKey';
     if (channel != null) {
       country = null;
       catagory = null;
-      baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+      baseApi =
+          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
     }
     if (searchKey != null) {
       country = null;
       catagory = null;
-      baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&q=$searchKey&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+      baseApi =
+          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&q=$searchKey&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
     }
-    print(baseApi);
+    //print(baseApi);
     getDataFromApi(baseApi);
   }
 
@@ -117,46 +123,61 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'News',
-      theme: isSwitched ? ThemeData.light() : ThemeData.dark(),
+      theme: isSwitched
+          ? ThemeData(
+              fontFamily: GoogleFonts.poppins().fontFamily,
+              brightness: Brightness.light)
+          : ThemeData(
+              fontFamily: GoogleFonts.poppins().fontFamily,
+              brightness: Brightness.dark),
       home: Scaffold(
         key: _scaffoldKey,
         drawer: Drawer(
           child: ListView(
-            padding: EdgeInsets.symmetric(vertical: 60),
+            padding: const EdgeInsets.symmetric(vertical: 32),
             children: <Widget>[
-              Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    country != null ? Text("Country = $cName") : Container(),
-                    SizedBox(height: 10),
-                    catagory != null ? Text("Catagory = $catagory") : Container(),
-                    SizedBox(height: 20),
-                  ],
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  country != null ? Text("Country = $cName") : Container(),
+                  const SizedBox(height: 10),
+                  catagory != null ? Text("Catagory = $catagory") : Container(),
+                  const SizedBox(height: 20),
+                ],
               ),
-              Container(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 5),
-                        child: TextFormField(
-                          decoration: InputDecoration(hintText: "Find Keyword"),
-                          scrollPadding: EdgeInsets.all(5),
-                          onChanged: (val) => setState(() => findNews = val),
-                        ),
-                      ),
-                    ),
-                    MaterialButton(
-                      child: Text("Find"),
-                      onPressed: () async => getNews(searchKey: findNews),
-                    ),
-                  ],
+              ListTile(
+                title: TextFormField(
+                  decoration: const InputDecoration(hintText: "Find Keyword"),
+                  scrollPadding: const EdgeInsets.all(5),
+                  onChanged: (val) => setState(() => findNews = val),
                 ),
+                trailing: IconButton(
+                    onPressed: () async => getNews(searchKey: findNews),
+                    icon: const Icon(Icons.search)),
               ),
+              // Container(
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: Padding(
+              //           padding: EdgeInsets.only(left: 5),
+              //           child: TextFormField(
+              //             decoration: InputDecoration(hintText: "Find Keyword"),
+              //             scrollPadding: EdgeInsets.all(5),
+              //             onChanged: (val) => setState(() => findNews = val),
+              //           ),
+              //         ),
+              //       ),
+              //       MaterialButton(
+              //         child: Text("Find"),
+              //         onPressed: () async => getNews(searchKey: findNews),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+
               ExpansionTile(
-                title: Text("Country"),
+                title: const Text("Country"),
                 children: <Widget>[
                   for (int i = 0; i < listOfCountry.length; i++)
                     DropDownList(
@@ -170,7 +191,7 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
               ExpansionTile(
-                title: Text("Catagory"),
+                title: const Text("Catagory"),
                 children: [
                   for (int i = 0; i < listOfCatagory.length; i++)
                     DropDownList(
@@ -182,22 +203,23 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
               ExpansionTile(
-                title: Text("Channel"),
+                title: const Text("Channel"),
                 children: [
                   for (int i = 0; i < listOfNewsChannel.length; i++)
                     DropDownList(
-                      call: () => getNews(channel: listOfNewsChannel[i]['code']),
+                      call: () =>
+                          getNews(channel: listOfNewsChannel[i]['code']),
                       name: listOfNewsChannel[i]['name']!.toUpperCase(),
                     ),
                 ],
               ),
-              ListTile(title: Text("Exit"), onTap: () => exit(0)),
+              //ListTile(title: Text("Exit"), onTap: () => exit(0)),
             ],
           ),
         ),
         appBar: AppBar(
           centerTitle: true,
-          title: Text("News"),
+          title: const Text("News"),
           actions: [
             IconButton(
               onPressed: () {
@@ -207,20 +229,21 @@ class _MyAppState extends State<MyApp> {
                 cName = null;
                 getNews(reload: true);
               },
-              icon: Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh),
             ),
             Switch(
               value: isSwitched,
               onChanged: (value) => setState(() => isSwitched = value),
-              activeTrackColor: Colors.yellow,
-              activeColor: Colors.red,
+              activeTrackColor: Colors.white,
+              activeColor: Colors.white,
             ),
           ],
         ),
         body: notFound
-            ? Center(child: Text("Not Found", style: TextStyle(fontSize: 30)))
-            : news.length == 0
-                ? Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: Text("Not Found", style: TextStyle(fontSize: 30)))
+            : news.isEmpty
+                ? const Center(child: CircularProgressIndicator(backgroundColor: Colors.yellow,))
                 : ListView.builder(
                     controller: controller,
                     itemBuilder: (context, index) {
@@ -230,28 +253,39 @@ class _MyAppState extends State<MyApp> {
                             padding: const EdgeInsets.all(5),
                             child: Card(
                               elevation: 5,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
                               child: GestureDetector(
                                 onTap: () async {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => ArticalNews(newsUrl: news[index]['url'])),
+                                    MaterialPageRoute(
+                                      fullscreenDialog: true,
+                                        builder: (context) => ArticalNews(
+                                            newsUrl: news[index]['url'])),
                                   );
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 15),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30)),
                                   child: Column(
                                     children: [
                                       Stack(children: [
                                         news[index]['urlToImage'] == null
                                             ? Container()
                                             : ClipRRect(
-                                                borderRadius: BorderRadius.circular(20),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
                                                 child: CachedNetworkImage(
-                                                  placeholder: (context, url) => Container(child: CircularProgressIndicator()),
-                                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                                  imageUrl: news[index]['urlToImage'],
+                                                  placeholder: (context, url) =>
+                                                      Container(),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          const SizedBox(),
+                                                  imageUrl: news[index]
+                                                      ['urlToImage'],
                                                 ),
                                               ),
                                         Positioned(
@@ -259,17 +293,28 @@ class _MyAppState extends State<MyApp> {
                                           right: 8,
                                           child: Card(
                                               elevation: 0,
-                                              color: Theme.of(context).primaryColor.withOpacity(0.8),
+                                              color: Theme.of(context)
+                                                  .primaryColor
+                                                  .withOpacity(0.8),
                                               child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                                child: Text("${news[index]['source']['name']}", style: Theme.of(context).textTheme.subtitle2),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 8),
+                                                child: Text(
+                                                    "${news[index]['source']['name']}",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle2),
                                               )),
                                         ),
                                       ]),
-                                      Divider(),
+                                      const Divider(),
                                       Text(
                                         "${news[index]['title']}",
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
                                       )
                                     ],
                                   ),
@@ -277,7 +322,9 @@ class _MyAppState extends State<MyApp> {
                               ),
                             ),
                           ),
-                          index == news.length - 1 && isLoading ? Center(child: CircularProgressIndicator()) : SizedBox(),
+                          index == news.length - 1 && isLoading
+                              ? const Center(child: CircularProgressIndicator(backgroundColor: Colors.yellow,))
+                              : const SizedBox(),
                         ],
                       );
                     },
@@ -292,10 +339,12 @@ class DropDownList extends StatelessWidget {
   final String name;
   final Function call;
 
-  const DropDownList({required this.name, required this.call});
+  const DropDownList({Key? key, required this.name, required this.call})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(child: ListTile(title: Text(name)), onTap: () => call());
+    return GestureDetector(
+        child: ListTile(title: Text(name)), onTap: () => call());
   }
 }
