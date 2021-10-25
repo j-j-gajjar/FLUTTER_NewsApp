@@ -1,4 +1,4 @@
-var listOfCountry = [
+const listOfCountry = [
   {"name": "INDIA", "code": "in"},
   {"name": "USA", "code": "us"},
   {"name": "MEXICO", "code": "mx"},
@@ -8,7 +8,7 @@ var listOfCountry = [
   {"name": "Indonesia", "code": "id"},
 ];
 
-var listOfCatagory = [
+const listOfCatagory = [
   {"name": "science", "code": "science"},
   {"name": "business", "code": "business"},
   {"name": "technology", "code": "technology"},
@@ -18,7 +18,7 @@ var listOfCatagory = [
   {"name": "entertainment", "code": "entertainment"},
   {"name": "ALL", "code": null},
 ];
-var listOfNewsChannel = [
+const listOfNewsChannel = [
   {"name": "BBC News", "code": "bbc-news"},
   {"name": "The Times of India", "code": "the-times-of-india"},
   {"code": "politico", "name": "politico"},
