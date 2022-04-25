@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:newsappflutter/artical_news.dart';
+import 'package:newsappflutter/presentation/screens/artical_news_screen/artical_news.dart';
 
 class NewsCardWidget extends StatelessWidget {
   const NewsCardWidget({Key? key, required this.news, required this.index})
