@@ -1,16 +1,18 @@
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:newsappflutter/artical_news.dart';
-import 'package:newsappflutter/constants.dart';
-import 'package:newsappflutter/list_of_country.dart';
+import 'package:newsappflutter/core/constants/keys.dart';
+import 'package:newsappflutter/data/models/list_of_drawer_items.dart';
+import 'package:newsappflutter/presentation/widgets/drop_down_list.dart';
+import 'package:newsappflutter/presentation/widgets/loading_widget.dart';
+import 'package:newsappflutter/presentation/widgets/news_card_widget.dart';
 
 void main() => runApp(const MyApp());
 
+// Global declares
 GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 void toggleDrawer() {
@@ -21,22 +23,7 @@ void toggleDrawer() {
   }
 }
 
-class DropDownList extends StatelessWidget {
-  final String name;
-  final Function call;
-
-  const DropDownList({Key? key, required this.name, required this.call})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: ListTile(title: Text(name)),
-      onTap: () => call(),
-    );
-  }
-}
-
+// starting point
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -59,6 +46,13 @@ class _MyAppState extends State<MyApp> {
   List<int> data = [];
   bool isLoading = false;
   String baseApi = "https://newsapi.org/v2/top-headlines?";
+
+  @override
+  void initState() {
+    controller = ScrollController()..addListener(_scrollListener);
+    getNews();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +123,7 @@ class _MyAppState extends State<MyApp> {
 
               ExpansionTile(
                 title: const Text("Country"),
-                children: <Widget>[
+                children: [
                   for (int i = 0; i < listOfCountry.length; i++)
                     DropDownList(
                       call: () {
@@ -138,9 +132,10 @@ class _MyAppState extends State<MyApp> {
                         getNews();
                       },
                       name: listOfCountry[i]['name']!.toUpperCase(),
-                    ),
+                    )
                 ],
               ),
+
               ExpansionTile(
                 title: const Text("Catagory"),
                 children: [
@@ -197,113 +192,36 @@ class _MyAppState extends State<MyApp> {
               )
             : news.isEmpty
                 ? const Center(
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.yellow,
-                    ),
+                    child: LoadingWidget(),
                   )
-                : ListView.builder(
-                    controller: controller,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(5),
-                            child: Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: GestureDetector(
-                                onTap: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      fullscreenDialog: true,
-                                      builder: (context) => ArticalNews(
-                                        newsUrl: news[index]['url'] as String,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 15,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          if (news[index]['urlToImage'] == null)
-                                            Container()
-                                          else
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              child: CachedNetworkImage(
-                                                placeholder: (context, url) =>
-                                                    Container(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const SizedBox(),
-                                                imageUrl: news[index]
-                                                    ['urlToImage'] as String,
-                                              ),
-                                            ),
-                                          Positioned(
-                                            bottom: 8,
-                                            right: 8,
-                                            child: Card(
-                                              elevation: 0,
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.8),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 10,
-                                                  vertical: 8,
-                                                ),
-                                                child: Text(
-                                                  "${news[index]['source']['name']}",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle2,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Divider(),
-                                      Text(
-                                        "${news[index]['title']}",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (index == news.length - 1 && isLoading)
-                            const Center(
-                              child: CircularProgressIndicator(
-                                backgroundColor: Colors.yellow,
-                              ),
-                            )
-                          else
-                            const SizedBox(),
-                        ],
-                      );
+                : RefreshIndicator(
+                    onRefresh: () async {
+                      country = null;
+                      catagory = null;
+                      findNews = null;
+                      cName = null;
+                      await getNews(reload: true);
                     },
-                    itemCount: news.length,
+                    child: ListView.builder(
+                      controller: controller,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: NewsCardWidget(news: news, index: index),
+                            ),
+                            if (index == news.length - 1 && isLoading)
+                              const Center(
+                                child: LoadingWidget(),
+                              )
+                            else
+                              const SizedBox(),
+                          ],
+                        );
+                      },
+                      itemCount: news.length,
+                    ),
                   ),
       ),
     );
@@ -372,13 +290,6 @@ class _MyAppState extends State<MyApp> {
     }
     //print(baseApi);
     getDataFromApi(baseApi);
-  }
-
-  @override
-  void initState() {
-    controller = ScrollController()..addListener(_scrollListener);
-    getNews();
-    super.initState();
   }
 
   void _scrollListener() {

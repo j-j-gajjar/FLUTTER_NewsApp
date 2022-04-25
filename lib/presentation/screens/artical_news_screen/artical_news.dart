@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:newsappflutter/presentation/widgets/loading_widget.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticalNews extends StatefulWidget {
@@ -31,9 +32,7 @@ class _ArticalNewsState extends State<ArticalNews> {
           if (_isLoadingPage)
             Container(
               alignment: FractionalOffset.center,
-              child: const CircularProgressIndicator(
-                backgroundColor: Colors.yellow,
-              ),
+              child: const LoadingWidget(),
             )
           else
             Container(),
