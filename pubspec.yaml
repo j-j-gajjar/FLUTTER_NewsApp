@@ -7,14 +7,14 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  cached_network_image: ^3.0.0
-  cupertino_icons: ^1.0.2
+  cached_network_image: ^3.2.1
+  cupertino_icons: ^1.0.4
   flutter:
     sdk: flutter
-  google_fonts: ^2.1.0
-  http: ^0.13.1
-  lint: ^1.7.2
-  webview_flutter: ^2.0.2
+  google_fonts: ^3.0.1
+  http: ^0.13.4
+  lint: ^1.8.2
+  webview_flutter: ^3.0.4
 
 dev_dependencies:
   flutter_test:

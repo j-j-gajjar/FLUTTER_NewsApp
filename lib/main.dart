@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -25,8 +24,7 @@ class DropDownList extends StatelessWidget {
   final String name;
   final Function call;
 
-  const DropDownList({Key? key, required this.name, required this.call})
-      : super(key: key);
+  const DropDownList({Key? key, required this.name, required this.call}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,15 +81,9 @@ class _MyAppState extends State<MyApp> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (country != null)
-                    Text("Country = $cName")
-                  else
-                    Container(),
+                  if (country != null) Text("Country = $cName") else Container(),
                   const SizedBox(height: 10),
-                  if (catagory != null)
-                    Text("Catagory = $catagory")
-                  else
-                    Container(),
+                  if (catagory != null) Text("Catagory = $catagory") else Container(),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -159,8 +151,7 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   for (int i = 0; i < listOfNewsChannel.length; i++)
                     DropDownList(
-                      call: () =>
-                          getNews(channel: listOfNewsChannel[i]['code']),
+                      call: () => getNews(channel: listOfNewsChannel[i]['code']),
                       name: listOfNewsChannel[i]['name']!.toUpperCase(),
                     ),
                 ],
@@ -241,16 +232,11 @@ class _MyAppState extends State<MyApp> {
                                             Container()
                                           else
                                             ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
+                                              borderRadius: BorderRadius.circular(20),
                                               child: CachedNetworkImage(
-                                                placeholder: (context, url) =>
-                                                    Container(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const SizedBox(),
-                                                imageUrl: news[index]
-                                                    ['urlToImage'] as String,
+                                                placeholder: (context, url) => Container(),
+                                                errorWidget: (context, url, error) => const SizedBox(),
+                                                imageUrl: news[index]['urlToImage'] as String,
                                               ),
                                             ),
                                           Positioned(
@@ -258,20 +244,15 @@ class _MyAppState extends State<MyApp> {
                                             right: 8,
                                             child: Card(
                                               elevation: 0,
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.8),
+                                              color: Theme.of(context).primaryColor.withOpacity(0.8),
                                               child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
+                                                padding: const EdgeInsets.symmetric(
                                                   horizontal: 10,
                                                   vertical: 8,
                                                 ),
                                                 child: Text(
                                                   "${news[index]['source']['name']}",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle2,
+                                                  style: Theme.of(context).textTheme.subtitle2,
                                                 ),
                                               ),
                                             ),
@@ -361,14 +342,12 @@ class _MyAppState extends State<MyApp> {
     if (channel != null) {
       country = null;
       catagory = null;
-      baseApi =
-          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+      baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&sources=$channel&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
     }
     if (searchKey != null) {
       country = null;
       catagory = null;
-      baseApi =
-          "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&q=$searchKey&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
+      baseApi = "https://newsapi.org/v2/top-headlines?pageSize=10&page=$pageNum&q=$searchKey&apiKey=58b98b48d2c74d9c94dd5dc296ccf7b6";
     }
     //print(baseApi);
     getDataFromApi(baseApi);
