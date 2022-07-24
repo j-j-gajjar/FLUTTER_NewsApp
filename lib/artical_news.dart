@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticalNews extends StatefulWidget {
+  const ArticalNews({super.key, required this.newsUrl});
   final String newsUrl;
-  const ArticalNews({Key? key, required this.newsUrl}) : super(key: key);
   @override
   _ArticalNewsState createState() => _ArticalNewsState();
 }
@@ -17,16 +17,17 @@ class _ArticalNewsState extends State<ArticalNews> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text("News")),
+      appBar: AppBar(centerTitle: true, title: const Text('News')),
       body: Stack(
         children: [
           WebView(
             initialUrl: widget.newsUrl,
             javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (controller) {
+            onWebViewCreated: (WebViewController controller) {
               _completer.complete(controller);
             },
-            onPageFinished: (finish) => setState(() => _isLoadingPage = false),
+            onPageFinished: (String finish) =>
+                setState(() => _isLoadingPage = false),
           ),
           if (_isLoadingPage)
             Container(
