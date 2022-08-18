@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'artical_news.dart';
 import 'constants.dart';
 import 'list_of_country.dart';
+import 'utils/app_dialog.dart';
 
 void main() => runApp(const MyApp());
 
@@ -21,14 +22,26 @@ void toggleDrawer() {
 }
 
 class DropDownList extends StatelessWidget {
-  const DropDownList({super.key, required this.name, required this.call});
+  const DropDownList({
+    super.key,
+    required this.name,
+    required this.call,
+  });
   final String name;
   final Function call;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: ListTile(title: Text(name)),
+      child: ListTile(
+        title: Text(name),
+        trailing: IconButton(
+          onPressed: () => AppDialog().showAppDialog(context),
+          icon: const Icon(
+            Icons.open_in_new,
+          ),
+        ),
+      ),
       onTap: () => call(),
     );
   }
