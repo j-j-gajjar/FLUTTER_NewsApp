@@ -1,4 +1,5 @@
-const List<Map<String, String>> listOfCountry = [
+class CountryList {
+  static const List<Map<String, String>> listOfCountry = [
   {'name': 'INDIA', 'code': 'in'},
   {'name': 'USA', 'code': 'us'},
   {'name': 'MEXICO', 'code': 'mx'},
@@ -8,7 +9,7 @@ const List<Map<String, String>> listOfCountry = [
   {'name': 'Indonesia', 'code': 'id'},
 ];
 
-const List<Map<String, String?>> listOfCategory = [
+static const List<Map<String, String?>> listOfCategory = [
   {'name': 'science', 'code': 'science'},
   {'name': 'business', 'code': 'business'},
   {'name': 'technology', 'code': 'technology'},
@@ -18,7 +19,7 @@ const List<Map<String, String?>> listOfCategory = [
   {'name': 'entertainment', 'code': 'entertainment'},
   {'name': 'ALL', 'code': null},
 ];
-const List<Map<String, String>> listOfNewsChannel = [
+static const List<Map<String, String>> listOfNewsChannel = [
   {'name': 'BBC News', 'code': 'bbc-news'},
   {'name': 'The Times of India', 'code': 'the-times-of-india'},
   {'code': 'politico', 'name': 'politico'},
@@ -30,3 +31,4 @@ const List<Map<String, String>> listOfNewsChannel = [
   {'code': 'fox-news', 'name': 'Fox News'},
   {'code': 'fox-news', 'name': 'Fox News'},
 ];
+}
