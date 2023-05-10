@@ -20,7 +20,6 @@ class _ArticalNewsState extends State<ArticalNews> {
     super.initState();
     _isLoadingPage = true;
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -50,3 +49,4 @@ class _ArticalNewsState extends State<ArticalNews> {
       ),
     );
   }
+}
