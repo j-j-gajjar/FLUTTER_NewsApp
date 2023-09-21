@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../news/screen/article_news.dart';
 
 import '../../../model/article_model.dart';
 import '../../../shared/extension.dart';
+import '../../news/screen/article_news.dart';
 
 class NewsArticleTile extends StatelessWidget {
   const NewsArticleTile({super.key, required this.article});
+
   final Article article;
 
   @override
@@ -31,44 +32,49 @@ class NewsArticleTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Stack(
-                      children: [
-                        if ((article.urlToImage ?? '').isNotEmpty)
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: CachedNetworkImage(
-                              placeholder: (BuildContext context, String url) => Container(),
-                              errorWidget: (BuildContext context, String url, error) => const SizedBox(),
-                              imageUrl: article.urlToImage ?? '',
-                            ),
-                          ),
-                        Positioned(
-                          bottom: 8,
-                          right: 8,
-                          child: Card(
-                            elevation: 0,
-                            color: Theme.of(context).primaryColor.withOpacity(0.8),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              child: Text(
-                                article.source?.name ?? '',
-                                style: context.theme.titleSmall,
+                    SizedBox(
+                      height: 240,
+                      child: Stack(
+                        children: [
+                          if ((article.urlToImage ?? '').isNotEmpty)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: CachedNetworkImage(
+                                placeholder: (BuildContext context, String url) => const SizedBox(),
+                                errorWidget: (BuildContext context, String url, error) => const SizedBox(),
+                                imageUrl: article.urlToImage ?? '',
+                                fit: BoxFit.cover,
                               ),
                             ),
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: Card(
+                              elevation: 0,
+                              color: Theme.of(context).primaryColor.withOpacity(0.8),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                child: Text(
+                                  article.source!.name ?? '',
+                                  style: context.theme.titleSmall,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const Divider(),
                     Text(
                       article.title ?? '',
                       style: context.theme.titleSmall!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     )
                   ],
                 ),

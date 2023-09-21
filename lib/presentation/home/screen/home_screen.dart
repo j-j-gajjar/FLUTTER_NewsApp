@@ -31,15 +31,15 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentPage = 0;
 
   String searchKey = '';
-  SelectableItem selectedCountry = const SelectableItem(type: ListType.country);
+  SelectableItem selectedCountry = countries.first;
   SelectableItem selectedCategory = const SelectableItem(type: ListType.category);
   SelectableItem selectedChannel = const SelectableItem(type: ListType.channel);
 
   @override
   void initState() {
     controller = ScrollController()..addListener(_scrollListener);
-    // getNews();
     super.initState();
+    getNews(selectedCountry.code, selectedCategory.code, channel: selectedChannel.code, searchKey: searchKey);
   }
 
   void _scrollListener() {
@@ -50,22 +50,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onRefresh() {
-    selectedCategory = const SelectableItem(type: ListType.category);
-    selectedCountry = const SelectableItem(type: ListType.country);
+    selectedCountry = countries.first;
+    selectedCategory = const SelectableItem(type: ListType.country);
     selectedChannel = const SelectableItem(type: ListType.channel);
+    currentPage = 0;
     news.clear();
 
-    getNews(selectedCountry.code, selectedCategory.code, channel: selectedChannel.code, searchKey: searchKey, isReload: true);
+    getNews(selectedCountry.code, selectedCategory.code, channel: selectedChannel.code, searchKey: searchKey);
   }
 
-  Future<void> getNews(String country, String category, {String? channel, String? searchKey, bool isReload = false}) async {
+  Future<void> getNews(String country, String category, {String? channel, String? searchKey}) async {
     setState(() => _isLoading = true);
 
-    if (isReload) {
-      currentPage = 0;
-    }
+    currentPage++;
 
-    await api.requestData(api.topHeadlines(pageSize, country, category, currentPage++, channel: channel, searchKey: searchKey)).then((response) {});
+    await api.requestData(api.topHeadlines(pageSize, country, category, currentPage, channel: channel, searchKey: searchKey)).then((response) {
+      news.addAll((response['articles'] as List).map<Article>((article) => Article.fromJson(article as Map<String, dynamic>)).toList());
+      setState(() => _isLoading = false);
+    });
   }
 
   @override
@@ -102,14 +104,14 @@ class _HomeScreenState extends State<HomeScreen> {
           } else if (item.type == ListType.category) {
             selectedCategory = item;
           }
-          getNews(selectedCountry.code, selectedCategory.code, channel: selectedChannel.code, searchKey: searchKey, isReload: true);
+          getNews(selectedCountry.code, selectedCategory.code, channel: selectedChannel.code, searchKey: searchKey);
         },
         onSearchChanged: (String searchKey) {
           this.searchKey = searchKey;
-          getNews(selectedCountry.code, selectedCategory.code, channel: selectedChannel.code, searchKey: searchKey, isReload: true);
+          getNews(selectedCountry.code, selectedCategory.code, channel: selectedChannel.code, searchKey: searchKey);
         },
       ),
-      body: !_isLoading
+      body: news.isNotEmpty || !_isLoading
           ? news.isNotEmpty
               ? _buildList
               : const Center(
@@ -129,17 +131,18 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: controller,
         itemBuilder: (BuildContext context, int index) {
           return Column(
-            key: ValueKey<int>(index),
             mainAxisSize: MainAxisSize.min,
             children: [
               NewsArticleTile(
-                key: ValueKey<Article>(news[index]),
                 article: news[index],
               ),
               if (index == news.length - 1 && _isLoading)
-                const Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.yellow,
+                SizedBox(
+                  height: 100,
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.yellow,
+                    ),
                   ),
                 )
             ],
