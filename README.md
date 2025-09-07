@@ -11,6 +11,7 @@ News App Flutter is a simple news app built with Flutter that displays top news 
 >  - retrofit_generator
 >  - freezed
 >  - json_serializable
+
 > For more details and to follow the development progress, visit the [GitHub repository](https://github.com/j-j-gajjar/flutter_news_bloc). Contributions to this project are welcome! Feel free to fork the repository and submit pull requests.
 
 
